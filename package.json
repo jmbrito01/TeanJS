@@ -1,0 +1,23 @@
+{
+  "name": "tean-js",
+  "version": "1.0.0",
+  "description": "A simple forex and stock price catcher module",
+  "main": "app.js",
+  "author": "João Marcelo Brito <joaomgab@al.insper.edu.br>",
+  "dependencies": {
+    "yahoo-currency": "^0.0.9",
+    "yahoo-finance": "^0.2.11"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "forex",
+    "currency",
+    "stock",
+    "quotes",
+    "quote"
+  ],
+  "license": "MIT"
+}
