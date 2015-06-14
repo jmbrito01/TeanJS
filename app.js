@@ -1,4 +1,11 @@
-﻿createForexWatch = function (quote) {
+﻿/* createForexWatch function 
+ * Description: Creates a forex watch
+ * Params: 
+ *      quote: The symbol of the forex currency (Ex: 'EURUSD')
+ * Return: 
+ *      An object to handle this forex currency
+ */      
+exports.createForexWatch = function (quote) {
     var fx = require('yahoo-currency');
     var watcher = {
         symbol : quote
@@ -19,7 +26,7 @@
  *      interval: 'd' = Day, 'w' = Week, 'm' = Month
  * Return:
  *      An object to handle this stock or null if error */
-createStockWatch = function (quote, interval) {
+exports.createStockWatch = function (quote, interval) {
     var watcher = {
         symbol: quote, 
         interval: interval
@@ -64,8 +71,3 @@ createStockWatch = function (quote, interval) {
     }
     return watcher;
 }
-
-var watcher = createForexWatch('EURUSD');
-watcher.getSnapshot(function (quote) { 
-    console.log(quote);
-});
