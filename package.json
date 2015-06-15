@@ -4,6 +4,7 @@
   "description": "A simple forex and stock technical analysis module",
   "main": "app.js",
   "author": "João Marcelo Brito <joaomgab@al.insper.edu.br>",
+  "repository": {"type": "github", "url": "https://github.com/jmbrito01/TeanJS"},
   "dependencies": {
     "yahoo-currency": "^0.0.9",
     "yahoo-finance": "^0.2.11",
