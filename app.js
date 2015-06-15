@@ -12,9 +12,24 @@ exports.createForexWatch = function (quote) {
         symbol : quote
     };
 
-    watcher.getSnapshot = function (cb) {
-        fx.fullRate().then(function (rate) { 
-            cb(rate[watcher.symbol]);
+    watcher.getSnapshot = function () {
+        return new Promise(function (fulfill, reject) { 
+            fx.fullRate().then(function (rate) { 
+                fulfill(rate);
+            });
+        });
+    }
+    /*
+     * Converts the currency forex symbol with a selected amount of money
+     * @function ForexWatcher#exchangeCurrency
+     * @param {float} money - the money amount to be converted.
+     * @returns {float} the money amount converted
+     */
+    watcher.exchangeCurrency = function (money) {
+        return new Promise(function (fulfill, reject) {
+            watcher.getSnapshot().then(function (rate) { 
+                fulfill(rate[watcher.symbol] * money);
+            });
         });
     }
     return watcher;
@@ -56,6 +71,23 @@ exports.createStockWatch = function (quote, interval) {
      * @param {callback} cb - callback function with 2 params
      */
     watcher.getHistorical = function (from, to, cb) {
+        if (cb === undefined) {
+            return new Promise(function (fulfill, reject) {
+                finance.historical({
+                    symbol: watcher.symbol,
+                    from: from,
+                    to: to,
+                    period: watcher.interval
+                }, function (err, quotes) { 
+                    if (err != null)
+                        reject(err);
+                    else
+                        fulfill(quotes);
+                });
+                                
+            });
+        }
+           
         finance.historical({
             symbol: this.symbol,
             from: from,
@@ -109,7 +141,7 @@ exports.createStockWatch = function (quote, interval) {
     }
     /* Gets the SMA close price from the period 
      * @param {integer} period - period of the SMA price search
-     * @returns {integer} the SMA of the period.
+     * @returns {object} {high, low}
      */
     watcher.getSMA = function (period) {
         if (watcher.interval == 'd')
@@ -127,6 +159,36 @@ exports.createStockWatch = function (quote, interval) {
                     sum = sum + quotes[i].close;
                     if (i == (quotes.length - 1))
                         fulfill(sum/quotes.length)
+                };
+
+            });
+        });
+    }
+    /* Gets the MAHL(Moving Average High Low) from the period 
+     * @param {integer} period - period of the MAHL search
+     * @returns {integer} the MAHL of the period.
+     */
+    watcher.getMAHL = function (period) {
+        if (watcher.interval == 'd')
+            var from = new Date((new Date()).getTime() - (new Date(period * 24 * 60 * 60 * 1000)));
+        else if (watcher.interval == 'w')
+            var from = new Date((new Date()).getTime() - (new Date(period * 7 * 24 * 60 * 60 * 1000)));
+        else if (watcher.interval == 'm')
+            var from = new Date((new Date()).getTime() - (new Date(period * 30 * 24 * 60 * 60 * 1000)));
+        return new Promise(function (fulfill, reject) {
+            watcher.getHistorical(from, new Date(), function (err, quotes) {
+                if (err != null)
+                    reject(err);
+                var high = 0;
+                var low = 0;
+                for (var i = 0; i < quotes.length; i++) {
+                    high = high + quotes[i].high;
+                    low = low + quotes[i].low;
+                    if (i == (quotes.length - 1))
+                        fulfill({
+                            ma_high: high / quotes.length,
+                            ma_low: low /quotes.length
+                        });
                 };
 
             });
@@ -156,6 +218,42 @@ exports.createStockWatch = function (quote, interval) {
                         down++;
                     if (i == (quotes.length - 1))
                         fulfill(100 - 100 / (1 + ((up /quotes.length) / (down /quotes.length))));
+                };
+
+            });
+        });
+    }
+    /* Gets the Average True Range(ATR) of the stock
+     * @param {integer} period - the period of the ATR
+     * @param {inteher} method - the method to calculate the True Range( 1 for High-low; 2 for High-close;3 for Low-close)
+     * @result {float} the ATR
+     */
+    watcher.getATR = function (period, method) {
+        if (watcher.interval == 'd')
+            var from = new Date((new Date()).getTime() - (new Date(period * 24 * 60 * 60 * 1000)));
+        else if (watcher.interval == 'w')
+            var from = new Date((new Date()).getTime() - (new Date(period * 7 * 24 * 60 * 60 * 1000)));
+        else if (watcher.interval == 'm')
+            var from = new Date((new Date()).getTime() - (new Date(period * 30 * 24 * 60 * 60 * 1000)));
+        return new Promise(function (fulfill, reject) {
+            watcher.getHistorical(from, new Date(), function (err, quotes) {
+                if (err != null)
+                    reject(err);
+                var sum = 0;
+                for (var i = 0; i < quotes.length; i++) {
+                    switch (method) {
+                        case 1:
+                            sum = sum + quotes[i].high - quotes[i].low;
+                            break;
+                        case 2:
+                            sum = sum + Math.abs(quotes[i].high - quotes[i].close);
+                            break;
+                        case 3:
+                            sum = sum + Math.abs(quotes[i].low - quotes[i].close);
+                            break;
+                    };
+                    if (i == quotes.length - 1)
+                        fulfill(sum / quotes.length);
                 };
 
             });

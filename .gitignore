@@ -35,10 +35,11 @@ $RECYCLE.BIN/
 .Spotlight-V100
 .Trashes
 
-#Not necessary paths for github
+#Not necessary paths & files for github
 node_modules
 out
 .ntvs_analysis.dat
+.ntvs_analysis.dat.tmp
 
 # Directories potentially created on remote AFP share
 .AppleDB

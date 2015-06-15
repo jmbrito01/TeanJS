@@ -21,8 +21,12 @@ V1.0.3
 V1.0.4
 	-> Added StockWatcher.isGoodToBuy
 	-> Added StockWatcher.isGoodToSell
-	-> Added Promise support on StockWatcher.getSnapshot
-
+	-> Added Promise support for StockWatcher.getSnapshot
+V1.1.0	
+	-> Added ForexWatcher.exchangeCurrency
+	-> Added StockWatcher.getMAHL
+	-> Added StockWatcher.getATR
+	-> Added Promise support for  StockWatcher.getHistorical
 #Dependencies
 	JSDoc, yahoo-currency, yahoo-finance, promise.
 
