@@ -35,6 +35,10 @@ $RECYCLE.BIN/
 .Spotlight-V100
 .Trashes
 
+#Not necessary paths for github
+node_modules
+out
+
 # Directories potentially created on remote AFP share
 .AppleDB
 .AppleDesktop
