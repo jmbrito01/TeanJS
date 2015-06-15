@@ -38,6 +38,7 @@ $RECYCLE.BIN/
 #Not necessary paths for github
 node_modules
 out
+.ntvs_analysis.dat
 
 # Directories potentially created on remote AFP share
 .AppleDB
