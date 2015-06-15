@@ -1,6 +1,6 @@
 {
   "name": "tean-js",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "A simple forex and stock technical analysis module",
   "main": "app.js",
   "author": "João Marcelo Brito <joaomgab@al.insper.edu.br>",

@@ -5,7 +5,7 @@
  * @param {string} quote - The symbol of the forex currency (Ex: 'EURUSD')
  * @returns {ForexWatcher} the ForexWatcher object
  */      
-exports.createForexWatch = function (quote) {
+createForexWatch = function (quote) {
     var fx = require('yahoo-currency');
     /*@class watcher*/
     var watcher = {
@@ -25,7 +25,7 @@ exports.createForexWatch = function (quote) {
  * @param {integer} interval -'d' = Day, 'w' = Week, 'm' = Month
  * @returns {StockWatcher} the StockWatcher object
  */
-exports.createStockWatch = function (quote, interval) {
+createStockWatch = function (quote, interval) {
     var watcher = {
         symbol: quote, 
         interval: interval
@@ -127,5 +127,40 @@ exports.createStockWatch = function (quote, interval) {
             });
         });
     }
+    /* Gets the RSI close price from the period 
+     * @param {integer} period - period of the RSI price search
+     * @returns {integer} the RSI of the period.
+     */
+    watcher.getRSI = function (period) {
+        if (watcher.interval == 'd')
+            var from = new Date((new Date()).getTime() - (new Date(period * 24 * 60 * 60 * 1000)));
+        else if (watcher.interval == 'w')
+            var from = new Date((new Date()).getTime() - (new Date(period * 7 * 24 * 60 * 60 * 1000)));
+        else if (watcher.interval == 'm')
+            var from = new Date((new Date()).getTime() - (new Date(period * 30 * 24 * 60 * 60 * 1000)));
+        return new Promise(function (fulfill, reject) {
+            watcher.getHistorical(from, new Date(), function (err, quotes) {
+                if (err != null)
+                    reject(err);
+                var up = 0;
+                var down = 0;
+                for (var i = 0; i < quotes.length; i++) {
+                    if (quotes[i].close > quotes[i].open)
+                        up++;
+                    if (quotes[i].close < quotes[i].open)
+                        down++;
+                    if (i == (quotes.length - 1))
+                        fulfill(100 - 100 / (1 + ((up /quotes.length) / (down /quotes.length))));
+                };
+
+            });
+        });
+    }
+
     return watcher;
 }
+
+var watcher = createStockWatch('WMT', 'd');
+watcher.getRSI(18).then(function (rsi) { 
+    console.log(rsi);
+});

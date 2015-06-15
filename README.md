@@ -14,6 +14,10 @@ V1.0.1
 	-> Added StockWatcher.getMin.
 	-> Added StockWatcher.getSMA.
 	-> Added JSDoc to the project.
+V1.0.2
+	-> Bugfixes
+V1.0.3
+	-> Added StockWatcher.getRSI.
 
 #Dependencies
 	JSDoc, yahoo-currency, yahoo-finance, promise.
