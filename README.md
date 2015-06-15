@@ -18,6 +18,10 @@ V1.0.2
 	-> Bugfixes
 V1.0.3
 	-> Added StockWatcher.getRSI.
+V1.0.4
+	-> Added StockWatcher.isGoodToBuy
+	-> Added StockWatcher.isGoodToSell
+	-> Added Promise support on StockWatcher.getSnapshot
 
 #Dependencies
 	JSDoc, yahoo-currency, yahoo-finance, promise.

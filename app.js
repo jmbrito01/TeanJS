@@ -5,7 +5,7 @@
  * @param {string} quote - The symbol of the forex currency (Ex: 'EURUSD')
  * @returns {ForexWatcher} the ForexWatcher object
  */      
-createForexWatch = function (quote) {
+exports.createForexWatch = function (quote) {
     var fx = require('yahoo-currency');
     /*@class watcher*/
     var watcher = {
@@ -25,23 +25,28 @@ createForexWatch = function (quote) {
  * @param {integer} interval -'d' = Day, 'w' = Week, 'm' = Month
  * @returns {StockWatcher} the StockWatcher object
  */
-createStockWatch = function (quote, interval) {
+exports.createStockWatch = function (quote, interval) {
     var watcher = {
         symbol: quote, 
         interval: interval
     };
     var finance = require('yahoo-finance');   
     var Promise = require('promise');
+
     /* Retrieves a snapshot object of the stock
-     * @function getSnapshot
-     * @param {callback} cb: a callback with 2 parameters     
+     * @function getSnapshot    
      * */
-    watcher.getSnapshot = function (cb){
-        finance.snapshot({
-            symbol: this.symbol,
-            fields: ['s', 'n', 'd1', 'l1', 'y', 'r']
-        }, function (err, snapshot) {
-            cb(err, snapshot);
+    watcher.getSnapshot = function (){
+        return new Promise(function (fulfill, reject) {
+            finance.snapshot({
+                symbol:watcher.symbol,
+                fields: ['s', 'n', 'd1', 'l1', 'y', 'r']
+            }, function (err, snapshot) {
+                if (err != null)
+                    reject(err);
+                else
+                    fulfill(snapshot);
+            });
         });
     }
     /* Retrieves an array of objects containing the historical values of the stock
@@ -156,11 +161,60 @@ createStockWatch = function (quote, interval) {
             });
         });
     }
-
+    /* Returns if it's a good idea to buy based on the technical indicatiors of the module
+     * @param {integer} period - period of the buy, if its a quick buy set to low values, and a long-term bet big values.
+     * @param {integer} precision - this precision is the min quotient of the buy/dont buy list of technical indications
+     * @returns {bool} true if it's a good idea to buy, false if it's not.
+     */
+    watcher.isGoodToBuy = function(period, precision) {
+        var good = 0;
+        var not = 0;
+        return new Promise(function (fulfill, reject) {
+            watcher.getRSI(period).then(function (rsi) {
+                if (rsi <= 30) good++;
+                else not++;
+                watcher.getSMA(period).then(function (sma) {
+                    watcher.getSnapshot().then(function (snapshot) { 
+                        if (sma > snapshot.lastTradePriceOnly)
+                            good++;
+                        else
+                            not++;
+                        if (precision <= (good / not))
+                            fulfill(true);
+                        else
+                            fulfill(false);
+                    });
+                });
+            });
+        });
+    }
+    
+    /* Returns if it's a good idea to sell based on the technical indicatiors of the module
+     * @param {integer} period - period of the sell, if its a quick buy set to low values, and a long-term bet big values.
+     * @param {integer} precision - this precision is the min quotient of the sell/dont sell list of technical indications
+     * @returns {bool} true if it's a good idea to sell, false if it's not.
+     */
+    watcher.isGoodToSell = function (period, precision) {
+        var good = 0;
+        var not = 0;
+        return new Promise(function (fulfill, reject) {
+            watcher.getRSI(period).then(function (rsi) {
+                if (rsi >= 70) good++;
+                else not++;
+                watcher.getSMA(period).then(function (sma) {
+                    watcher.getSnapshot().then(function (snapshot) {
+                        if (sma < snapshot.lastTradePriceOnly)
+                            good++;
+                        else
+                            not++;
+                        if (precision <= (good / not))
+                            fulfill(true);
+                        else
+                            fulfill(false);
+                    });
+                });
+            });
+        });
+    }
     return watcher;
 }
-
-var watcher = createStockWatch('WMT', 'd');
-watcher.getRSI(18).then(function (rsi) { 
-    console.log(rsi);
-});
