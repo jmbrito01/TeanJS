@@ -5,7 +5,7 @@
  * @param {string} quote - The symbol of the forex currency (Ex: 'EURUSD')
  * @returns {ForexWatcher} the ForexWatcher object
  */      
-createForexWatch = function (quote) {
+exports.createForexWatch = function (quote) {
     var fx = require('yahoo-currency');
     /*@class watcher*/
     var watcher = {
@@ -25,7 +25,7 @@ createForexWatch = function (quote) {
  * @param {integer} interval -'d' = Day, 'w' = Week, 'm' = Month
  * @returns {StockWatcher} the StockWatcher object
  */
-createStockWatch = function (quote, interval) {
+exports.createStockWatch = function (quote, interval) {
     var watcher = {
         symbol: quote, 
         interval: interval
@@ -129,8 +129,3 @@ createStockWatch = function (quote, interval) {
     }
     return watcher;
 }
-
-var watcher = createStockWatch('WMT', 'd');
-watcher.getSMA(10).then(function (sma) {
-    console.log(sma);
-});
