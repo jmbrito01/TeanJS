@@ -5,28 +5,29 @@ math functions in a powerfull and fast technical analysis package.
 We plan on later versions add technical analysis and chart functions.
 
 #Changelog:
-V1.0.0
-	-> Forex Snapshots.
-	-> Quote Snapshots.
-	-> Quote Historical Values.
-V1.0.1
-	-> Added StockWatcher.getMax.
-	-> Added StockWatcher.getMin.
-	-> Added StockWatcher.getSMA.
-	-> Added JSDoc to the project.
-V1.0.2
-	-> Bugfixes
-V1.0.3
-	-> Added StockWatcher.getRSI.
-V1.0.4
-	-> Added StockWatcher.isGoodToBuy
-	-> Added StockWatcher.isGoodToSell
-	-> Added Promise support for StockWatcher.getSnapshot
-V1.1.0	
-	-> Added ForexWatcher.exchangeCurrency
-	-> Added StockWatcher.getMAHL
-	-> Added StockWatcher.getATR
-	-> Added Promise support for  StockWatcher.getHistorical
+```
+* 1.0.0
+	* Forex Snapshots
+	* Quote Snapshots
+	* Quote Historical Values.
+* 1.0.1
+	* Added getMax, getMin, getSMA to StockWatcher
+	* Added JSDoc
+* 1.0.2
+	* Some Bugfixes
+* 1.0.3
+	* Added getRSI to StockWatcher
+* 1.0.4
+	* Added isGoodToBuy & isGoodToSell(Not ready) to StockWatcher
+	* Added promise support for StockWatcher.getSnapshot
+* 1.1.0
+	* Added exchangeCurrency to ForexWatcher
+	* Added getMAHL getATR to StockWatcher
+	* Added promise support for StockWatcher.getHistorical
+* 1.1.1
+	* Complete refactor to ES6	
+```	
+
 #Dependencies
 	JSDoc, yahoo-currency, yahoo-finance, promise.
 

@@ -1,15 +1,14 @@
 {
   "name": "tean-js",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A simple forex and stock technical analysis module",
   "main": "app.js",
-  "author": "João Marcelo Brito <joaomgab@al.insper.edu.br>",
+  "author": "Joï¿½o Marcelo Brito <joaomgab@al.insper.edu.br>",
   "homepage": "https://github.com/jmbrito01/TeanJS",
   "repository": {"type": "git", "url": "https://github.com/jmbrito01/TeanJS.git"},
   "dependencies": {
     "yahoo-currency": "^0.0.9",
-    "yahoo-finance": "^0.2.11",
-    "promise": "^7.0.1"
+    "yahoo-finance": "^0.2.11"
   },
   "bugs": {
     "url": "https://github.com/jmbrito01/TeanJS/issues"
