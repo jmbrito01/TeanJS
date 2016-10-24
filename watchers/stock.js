@@ -16,9 +16,10 @@ class StockWatcher {
      * 
      */
     getSnapshot() {
+        let self = this;
         return new Promise(function (fulfill, reject) {
             finance.snapshot({
-                symbol:watcher.symbol,
+                symbol:self.symbol,
                 fields: ['s', 'n', 'd1', 'l1', 'y', 'r']
             }, function (err, snapshot) {
                 if (err != null)
@@ -35,14 +36,15 @@ class StockWatcher {
      * @param {Date} end = period Ex: '2015-06-14'
      * @param {callback} [cb] - callback function with 2 params
      */
-    getHistorical(from, end, cb) {
+    getHistorical(start, end, cb) {
+        let self = this;
         if (cb === undefined) {
             return new Promise(function (fulfill, reject) {
                 finance.historical({
-                    symbol: watcher.symbol,
-                    from: from,
-                    to: to,
-                    period: watcher.interval
+                    symbol: self.symbol,
+                    from: start,
+                    to: end,
+                    period: self.interval
                 }, function (err, quotes) { 
                     if (err != null)
                         reject(err);
@@ -55,8 +57,8 @@ class StockWatcher {
            
         finance.historical({
             symbol: this.symbol,
-            from: from,
-            to: to,
+            from: start,
+            to: end,
             period: this.interval
         }, function (err, quotes) {
             cb(err, quotes);
@@ -67,13 +69,13 @@ class StockWatcher {
      * @param {callback} cb - callback with the result
      */
     getMax(period, cb) {
-        if (watcher.interval == 'd')
+        if (this.interval == 'd')
             var from = new Date((new Date()).getTime() - (new Date(period * 24 * 60 * 60 * 1000)));
-        else if (watcher.interval == 'w')
+        else if (this.interval == 'w')
             var from = new Date((new Date()).getTime() - (new Date(period * 7 * 24 * 60 * 60 * 1000)));
-        else if (watcher.interval == 'm')
+        else if (this.interval == 'm')
             var from = new Date((new Date()).getTime() - (new Date(period * 30 * 24 * 60 * 60 * 1000)));
-        watcher.getHistorical(from, new Date(), function (err, quotes) {
+        this.getHistorical(from, new Date(), function (err, quotes) {
             if (err == null)
                 cb(null);
             var max = 0;
@@ -88,16 +90,16 @@ class StockWatcher {
      * @param {callback} cb - callback with the result
      */
     getMin(period, cb) {
-        if (watcher.interval == 'd')
+        if (this.interval == 'd')
             var from = new Date((new Date()).getTime() - (new Date(period * 24 * 60 * 60 * 1000)));
-        else if (watcher.interval == 'w')
+        else if (this.interval == 'w')
             var from = new Date((new Date()).getTime() - (new Date(period * 7 * 24 * 60 * 60 * 1000)));
-        else if (watcher.interval == 'm')
+        else if (this.interval == 'm')
             var from = new Date((new Date()).getTime() - (new Date(period * 30 * 24 * 60 * 60 * 1000)));
-        watcher.getHistorical(from, new Date(), function (err, quotes) {
+        this.getHistorical(from, new Date(), function (err, quotes) {
             if (err == null)
                 cb(null);
-            var min = watcher.getMax();
+            var min = this.getMax();
             for (var i = 0; i < quotes.length; i++)
                 if (quotes[i].close < min)
                     max = quotes[i].close;
@@ -110,14 +112,14 @@ class StockWatcher {
      * @returns {object} {high, low}
      */
     getSMA(period) {
-        if (watcher.interval == 'd')
+        if (this.interval == 'd')
             var from = new Date((new Date()).getTime() - (new Date(period * 24 * 60 * 60 * 1000)));
-        else if (watcher.interval == 'w')
+        else if (this.interval == 'w')
             var from = new Date((new Date()).getTime() - (new Date(period * 7 * 24 * 60 * 60 * 1000)));
-        else if (watcher.interval == 'm')
+        else if (this.interval == 'm')
             var from = new Date((new Date()).getTime() - (new Date(period * 30 * 24 * 60 * 60 * 1000)));
         return new Promise(function (fulfill, reject) {
-            watcher.getHistorical(from, new Date(), function (err, quotes) {
+            this.getHistorical(from, new Date(), function (err, quotes) {
                 if (err != null)
                     reject(err);
                 var sum = 0;
@@ -136,14 +138,14 @@ class StockWatcher {
      * @returns {integer} the MAHL of the period.
      */
     getMAHL(period) {
-        if (watcher.interval == 'd')
+        if (this.interval == 'd')
             var from = new Date((new Date()).getTime() - (new Date(period * 24 * 60 * 60 * 1000)));
-        else if (watcher.interval == 'w')
+        else if (this.interval == 'w')
             var from = new Date((new Date()).getTime() - (new Date(period * 7 * 24 * 60 * 60 * 1000)));
-        else if (watcher.interval == 'm')
+        else if (this.interval == 'm')
             var from = new Date((new Date()).getTime() - (new Date(period * 30 * 24 * 60 * 60 * 1000)));
         return new Promise(function (fulfill, reject) {
-            watcher.getHistorical(from, new Date(), function (err, quotes) {
+            this.getHistorical(from, new Date(), function (err, quotes) {
                 if (err != null)
                     reject(err);
                 var high = 0;
@@ -161,16 +163,20 @@ class StockWatcher {
             });
         });
     }
-
+    /* Gets the RSI close price from the period 
+     * @param {integer} period - period of the RSI price search
+     * @returns {integer} the RSI of the period.
+     */
     getRSI(period) {
-        if (watcher.interval == 'd')
+        let self = this;
+        if (this.interval == 'd')
             var from = new Date((new Date()).getTime() - (new Date(period * 24 * 60 * 60 * 1000)));
-        else if (watcher.interval == 'w')
+        else if (this.interval == 'w')
             var from = new Date((new Date()).getTime() - (new Date(period * 7 * 24 * 60 * 60 * 1000)));
-        else if (watcher.interval == 'm')
+        else if (this.interval == 'm')
             var from = new Date((new Date()).getTime() - (new Date(period * 30 * 24 * 60 * 60 * 1000)));
         return new Promise(function (fulfill, reject) {
-            watcher.getHistorical(from, new Date(), function (err, quotes) {
+            self.getHistorical(from, new Date(), function (err, quotes) {
                 if (err != null)
                     reject(err);
                 var up = 0;
@@ -186,11 +192,6 @@ class StockWatcher {
 
             });
         });
-
-        /* Gets the RSI close price from the period 
-     * @param {integer} period - period of the RSI price search
-     * @returns {integer} the RSI of the period.
-     */
     }
 
     /* Gets the Average True Range(ATR) of the stock
@@ -198,16 +199,16 @@ class StockWatcher {
      * @param {inteher} method - the method to calculate the True Range( 1 for High-low; 2 for High-close;3 for Low-close)
      * @result {float} the ATR
      */
-
     getATR(period, method) {
-        if (watcher.interval == 'd')
+        let self = this;
+        if (this.interval == 'd')
             var from = new Date((new Date()).getTime() - (new Date(period * 24 * 60 * 60 * 1000)));
-        else if (watcher.interval == 'w')
+        else if (this.interval == 'w')
             var from = new Date((new Date()).getTime() - (new Date(period * 7 * 24 * 60 * 60 * 1000)));
-        else if (watcher.interval == 'm')
+        else if (this.interval == 'm')
             var from = new Date((new Date()).getTime() - (new Date(period * 30 * 24 * 60 * 60 * 1000)));
         return new Promise(function (fulfill, reject) {
-            watcher.getHistorical(from, new Date(), function (err, quotes) {
+            self.getHistorical(from, new Date(), function (err, quotes) {
                 if (err != null)
                     reject(err);
                 var sum = 0;
@@ -239,12 +240,13 @@ class StockWatcher {
     isGoodToBuy(period, precision) {
         var good = 0;
         var not = 0;
+        let self = this;
         return new Promise(function (fulfill, reject) {
-            watcher.getRSI(period).then(function (rsi) {
+            self.getRSI(period).then(function (rsi) {
                 if (rsi <= 30) good++;
                 else not++;
-                watcher.getSMA(period).then(function (sma) {
-                    watcher.getSnapshot().then(function (snapshot) { 
+                self.getSMA(period).then(function (sma) {
+                    self.getSnapshot().then(function (snapshot) { 
                         if (sma > snapshot.lastTradePriceOnly)
                             good++;
                         else
@@ -267,12 +269,13 @@ class StockWatcher {
     isGoodToSell(period, precision) {
         var good = 0;
         var not = 0;
+        let self = this;
         return new Promise(function (fulfill, reject) {
-            watcher.getRSI(period).then(function (rsi) {
+            self.getRSI(period).then(function (rsi) {
                 if (rsi >= 70) good++;
                 else not++;
-                watcher.getSMA(period).then(function (sma) {
-                    watcher.getSnapshot().then(function (snapshot) {
+                self.getSMA(period).then(function (sma) {
+                    self.getSnapshot().then(function (snapshot) {
                         if (sma < snapshot.lastTradePriceOnly)
                             good++;
                         else
